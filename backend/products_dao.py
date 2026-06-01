@@ -41,6 +41,33 @@ def get_all_products(connection):
 
     return response
 
+def update_product(connection, product):
+
+    cursor = connection.cursor()
+
+    query = """
+    UPDATE products
+    SET
+        name = %s,
+        uom_id = %s,
+        price_per_unit = %s,
+        category = %s
+    WHERE product_id = %s
+    """
+
+    data = (
+        product['product_name'],
+        product['uom_id'],
+        product['price_per_unit'],
+        product['category'],
+        product['product_id']
+    )
+
+    cursor.execute(query, data)
+
+    connection.commit()
+
+    return cursor.rowcount
 
 def insert_new_products(connection, product):
 

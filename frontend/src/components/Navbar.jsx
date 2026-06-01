@@ -1,14 +1,35 @@
+
 import { Link } from "react-router-dom";
 
 function Navbar() {
+
+  const username =
+  sessionStorage.getItem("username");
+
+  const logout = () => {
+    sessionStorage.clear();
+    window.location.href = "/login";
+  };
+
+  const token = sessionStorage.getItem("token");
+
+  if (!token) return null;
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-success">
-      <div className="container">
-        <Link className="navbar-brand" to="/">
-          Grocery Store
+<nav
+  className="navbar navbar-expand-lg navbar-dark shadow"
+  style={{
+    background:
+      "linear-gradient(135deg, #0f172a, #1e3a8a)",
+  }}
+>      <div className="container">
+
+        <Link className="navbar-brand fw-bold" to="/">
+          🛒 Grocery Store
         </Link>
 
-        <div className="navbar-nav">
+        <div className="navbar-nav ms-auto">
+
           <Link className="nav-link" to="/">
             Dashboard
           </Link>
@@ -17,18 +38,30 @@ function Navbar() {
             Products
           </Link>
 
-          <li className="nav-item">
-  <Link
-    className="nav-link"
-    to="/order-history"
-  >
-    Order History
-  </Link>
-</li>
-
           <Link className="nav-link" to="/orders">
             Orders
           </Link>
+
+          <Link className="nav-link" to="/order-history">
+            Order History
+          </Link>
+          <div className="d-flex align-items-center">
+
+          <span className="text-white me-3">
+  Welcome, {username}
+</span>
+
+          {token && (
+  <button
+    className="btn btn-light ms-3"
+    onClick={logout}
+  >
+    Logout
+  </button>
+  
+)}
+</div>
+
         </div>
       </div>
     </nav>

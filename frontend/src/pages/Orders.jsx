@@ -11,6 +11,7 @@ function Orders() {
   const [orderItems, setOrderItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [orders, setOrders] = useState([]);
+  const username = sessionStorage.getItem("username");
 
   useEffect(() => {
     API.get("/getAllorders")
@@ -22,6 +23,15 @@ function Orders() {
       });
   }, []);
 
+  useEffect(() => {
+    API.get("/getProducts")
+      .then((res) => {
+        setProducts(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   const addItem = () => {
     if (!selectedProduct || quantity <= 0) {
       alert("Please select product and quantity");
@@ -105,10 +115,8 @@ function Orders() {
           <input
             type="text"
             className="form-control"
-            value={customerName}
-            onChange={(e) =>
-              setCustomerName(e.target.value)
-            }
+            value={username}
+            disabled
           />
         </div>
 
@@ -118,26 +126,25 @@ function Orders() {
           </label>
 
           <select
-            className="form-select"
-            value={selectedProduct}
-            onChange={(e) =>
-              setSelectedProduct(e.target.value)
-            }
-          >
-            <option value="">
-              Select Product
-            </option>
+  className="form-select"
+  value={selectedProduct}
+  onChange={(e) =>
+    setSelectedProduct(e.target.value)
+  }
+>
+  <option value="">
+    Select Product
+  </option>
 
-            {products.map((product) => (
-              <option
-                key={product.product_id}
-                value={product.product_id}
-              >
-                {product.name} - ₹
-                {product.price_per_unit}
-              </option>
-            ))}
-          </select>
+  {products.map((product) => (
+    <option
+      key={product.product_id}
+      value={product.product_id}
+    >
+      {product.name}
+    </option>
+  ))}
+</select>
         </div>
 
         <div className="mb-3">

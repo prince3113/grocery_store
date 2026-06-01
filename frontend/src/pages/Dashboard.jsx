@@ -4,17 +4,14 @@ import API from "../services/api";
 function Dashboard() {
   const [productCount, setProductCount] = useState(0);
   const [orderCount, setOrderCount] = useState(0);
+  const [Revenue, setRevenue] = useState(0);
 
   useEffect(() => {
-    API.get("/getProducts")
+    API.get("/dashboardStats")
       .then((res) => {
-        setProductCount(res.data.length);
-      })
-      .catch((err) => console.log(err));
-
-    API.get("/getAllorders")
-      .then((res) => {
-        setOrderCount(res.data.length);
+        setProductCount(res.data.total_products);
+        setOrderCount(res.data.total_orders);
+        setRevenue(res.data.total_revenue);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -24,24 +21,37 @@ function Dashboard() {
       <h2 className="mb-4">Dashboard</h2>
 
       <div className="row">
-        <div className="col-md-6 mb-3">
-          <div className="card text-center shadow">
-            <div className="card-body">
-              <h5 className="card-title">Products</h5>
-              <h1>{productCount}</h1>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-6 mb-3">
-          <div className="card text-center shadow">
-            <div className="card-body">
-              <h5 className="card-title">Orders</h5>
-              <h1>{orderCount}</h1>
-            </div>
-          </div>
-        </div>
+  <div className="col-md-4 mb-3">
+    <div className="card shadow border-0">
+      <div className="card-body text-center">
+        <i className="bi bi-box-seam fs-1 text-success"></i>
+        <h5 className="mt-2">Total Products</h5>
+        <h1>{productCount}</h1>
       </div>
+    </div>
+  </div>
+
+  <div className="col-md-4 mb-3">
+    <div className="card shadow border-0">
+      <div className="card-body text-center">
+        <i className="bi bi-cart-check fs-1 text-primary"></i>
+        <h5 className="mt-2">Total Orders</h5>
+        <h1>{orderCount}</h1>
+      </div>
+    </div>
+  </div>
+  <div className="col-md-4 mb-3">
+  <div className="card shadow border-0">
+    <div className="card-body text-center">
+      <i className="bi bi-currency-rupee fs-1 text-warning"></i>
+      <h5 className="mt-2">Total Revenue</h5>
+      <h1>₹{Revenue}</h1>
+    </div>
+  </div>
+</div>
+</div>
+
+
 
       <div className="card mt-4 shadow">
         <div className="card-body">
