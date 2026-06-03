@@ -1,7 +1,7 @@
 
 import { Link } from "react-router-dom";
 
-function Navbar() {
+function Navbar({darkMode, setDarkMode}) {
 
   const username =
   sessionStorage.getItem("username");
@@ -51,6 +51,13 @@ function Navbar() {
   Welcome, {username}
 </span>
 
+<button
+  className="btn btn-outline-light ms-3"
+  onClick={() => setDarkMode(!darkMode)}
+>
+  {darkMode ? "Light Mode" : "Dark Mode"}
+</button>
+                
           {token && (
   <button
     className="btn btn-light ms-3"

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 import Navbar from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
@@ -9,9 +10,22 @@ import Login from "./pages/LoginTemp.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    document.body.className = darkMode
+      ? "dark-mode"
+      : "light-mode";
+  }, [darkMode]);
+
   return (
     <BrowserRouter>
-      <Navbar />
+
+      <Navbar
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+      />
 
       <Routes>
 
@@ -65,6 +79,7 @@ function App() {
         />
 
       </Routes>
+
     </BrowserRouter>
   );
 }

@@ -3,8 +3,7 @@ import API from "../services/api";
 
 function Orders() {
   const [products, setProducts] = useState([]);
-
-  const [customerName, setCustomerName] = useState("");
+const [customerName, setCustomerName] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("");
   const [quantity, setQuantity] = useState(1);
 
@@ -97,9 +96,14 @@ function Orders() {
       setSelectedProduct("");
       setQuantity(1);
     } catch (error) {
-      console.error(error);
-      alert("Failed to place order");
-    }
+  console.error(error);
+
+  alert(
+    error.response?.data?.message ||
+    error.response?.data ||
+    error.message
+  );
+}
   };
 
   return (
@@ -108,17 +112,18 @@ function Orders() {
 
       <div className="card p-4 shadow">
         <div className="mb-3">
-          <label className="form-label">
-            Customer Name
-          </label>
+  <label className="form-label">
+    Customer Name
+  </label>
 
-          <input
-            type="text"
-            className="form-control"
-            value={username}
-            disabled
-          />
-        </div>
+  <input
+    type="text"
+    className="form-control"
+    placeholder="Enter customer name"
+    value={customerName}
+    onChange={(e) => setCustomerName(e.target.value)}
+  />
+</div>
 
         <div className="mb-3">
           <label className="form-label">

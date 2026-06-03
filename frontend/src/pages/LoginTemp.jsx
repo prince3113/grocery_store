@@ -33,9 +33,11 @@ function Login() {
       );
 
       window.location.href = "/";
-    } catch (error) {
-      alert("Invalid Credentials");
-    }
+    } 
+    catch (error) {
+  console.log("Error:", error.response?.data);
+  alert(JSON.stringify(error.response?.data));
+}
   };
 
   return (
