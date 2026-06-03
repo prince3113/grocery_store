@@ -1,10 +1,9 @@
-import psycopg2
+import mysql.connector
 
 def get_sql_connection():
-    return psycopg2.connect(
-        host="YOUR_HOST",
-        database="YOUR_DATABASE",
-        user="YOUR_USERNAME",
-        password="YOUR_PASSWORD",
-        sslmode="require"
+    return mysql.connector.connect(
+        host="127.0.0.1",
+        user="root",
+        password="root",
+        database="grocery_store"
     )

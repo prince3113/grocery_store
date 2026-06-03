@@ -43,14 +43,6 @@ def dashboard_stats():
         "total_revenue": total_revenue or 0
     })
 
-@app.route("/")
-def home():
-    return {"message": "Backend running"}
-
-@app.route("/test")
-def test():
-    return {"test": "ok"}
-
 @app.route('/getProducts', methods=['GET'])
 def get_product():
     connection = get_sql_connection()
@@ -199,10 +191,14 @@ def login():
     username = data['username']
     password = data['password']
 
+    print("Received username:", username)
+    print("Received password:", password)
+
     user = users_dao.get_user_by_username(
         connection,
         username
     )
+    print("User from DB:", user)
 
     if not user:
         return jsonify({
@@ -228,4 +224,4 @@ def login():
     })
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    app.run()

@@ -1,31 +1,50 @@
 from datetime import datetime
 from sql_connection import get_sql_connection
 
-def insert_order(connection,order):
+def insert_order(connection, order):
     cursor = connection.cursor()
 
-    order_query = ("insert into orders (customer_name, total, datetime) values (%s ,%s, %s)")
+    order_query = """
+        INSERT INTO orders (customer_name, total, datetime)
+        VALUES (%s, %s, %s)
+    """
 
-    order_data = (order['customer_name'], order['total'],datetime.now())
+    order_data = (
+        order['customer_name'],
+        order['total'],
+        datetime.now()
+    )
+
     cursor.execute(order_query, order_data)
+
     order_id = cursor.lastrowid
 
-    order_details_query = ("insert into order_details (order_id, product_id, quantity, total_price) values (%s,%s,%s,%s)")
+    order_details_query = """
+        INSERT INTO order_details
+        (order_id, product_id, quantity, total_price)
+        VALUES (%s, %s, %s, %s)
+    """
 
     order_details_data = []
-    for order_detail_record in order['order_details']:
+
+    for item in order['order_details']:
         order_details_data.append((
             order_id,
-            int(order_detail_record['product_id']),
-            int(order_detail_record['quantity']),
-            float(order_detail_record['total_price'])
+            int(item['product_id']),
+            int(item['quantity']),
+            float(item['total_price'])
         ))
-    cursor.execute(
-    "INSERT INTO orders (customer_name, total, datetime) VALUES (%s, %s, %s) RETURNING order_id",
-    order_data
-)
-    order_id = cursor.fetchone()[0]
 
+    cursor.executemany(
+        order_details_query,
+        order_details_data
+    )
+
+    connection.commit()
+
+    cursor.close()
+
+    return order_id
 
 
 def get_order_details(connection,order_id):
