@@ -20,11 +20,13 @@ def insert_order(connection,order):
             int(order_detail_record['quantity']),
             float(order_detail_record['total_price'])
         ))
-    cursor.executemany(order_details_query, order_details_data)
+    cursor.execute(
+    "INSERT INTO orders (customer_name, total, datetime) VALUES (%s, %s, %s) RETURNING order_id",
+    order_data
+)
+    order_id = cursor.fetchone()[0]
 
-    connection.commit()
-    
-    return order_id
+
 
 def get_order_details(connection,order_id):
     cursor = connection.cursor()

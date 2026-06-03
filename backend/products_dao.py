@@ -91,8 +91,9 @@ def insert_new_products(connection, product):
 
     connection.commit()
 
-    return cursor.lastrowid
-
+    cursor.execute("SELECT currval(pg_get_serial_sequence('products', 'product_id'))")
+    product_id = cursor.fetchone()[0]
+    return product_id
 
 def delete_product(connection, product_id):
 
@@ -108,7 +109,6 @@ def delete_product(connection, product_id):
     connection.commit()
 
     return cursor.rowcount
-
 
 if __name__ == '__main__':
     connection = get_sql_connection()
