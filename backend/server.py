@@ -43,6 +43,13 @@ def dashboard_stats():
         "total_revenue": total_revenue or 0
     })
 
+@app.route("/")
+def home():
+    return {"message": "Backend running"}
+
+@app.route("/test")
+def test():
+    return {"test": "ok"}
 
 @app.route('/getProducts', methods=['GET'])
 def get_product():
