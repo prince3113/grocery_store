@@ -183,39 +183,42 @@ def update_product():
 
 @app.route('/login', methods=['POST'])
 def login():
+    try:
+        connection = get_sql_connection()
 
-    connection = get_sql_connection()
+        data = request.get_json()
+        print("Received Data:", data)
 
-    data = request.get_json()
+        username = data['username']
+        password = data['password']
 
-    username = data['username']
-    password = data['password']
+        user = users_dao.get_user_by_username(
+            connection,
+            username
+        )
 
-    print("Received username:", username)
-    print("Received password:", password)
+        print("User from DB:", user)
 
-    user = users_dao.get_user_by_username(
-        connection,
-        username
-    )
-    print("User from DB:", user)
+        if not user:
+            return jsonify({"message": "Invalid username"}), 401
 
-    if not user:
+        if password != user['password']:
+            return jsonify({"message": "Invalid password"}), 401
+
+        token = create_access_token(
+            identity=str(user["user_id"]),
+            additional_claims={"role": user["role"]}
+        )
+
         return jsonify({
-            "message": "Invalid username"
-        }), 401
+            "token": token,
+            "role": user["role"],
+            "username": user["username"]
+        })
 
-    if password != user['password']:
-        return jsonify({
-            "message": "Invalid password"
-        }), 401
-
-    token = create_access_token(
-    identity=str(user["user_id"]),
-    additional_claims={
-        "role": user["role"]
-    }
-)
+    except Exception as e:
+        print("LOGIN ERROR:", str(e))
+        return jsonify({"error": str(e)}), 500
 
     return jsonify({
         "token": token,

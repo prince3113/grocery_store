@@ -1,7 +1,7 @@
-import mysql.connector
+import pymysql
 
 def get_sql_connection():
-    return mysql.connector.connect(
+    return pymysql.connect(
         host="127.0.0.1",
         user="root",
         password="root",
