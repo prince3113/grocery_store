@@ -181,6 +181,44 @@ def update_product():
         "updated": updated_count
     })
 
+@app.route('/signup', methods=['POST'])
+def signup():
+    try:
+        connection = get_sql_connection()
+        data = request.get_json()
+
+        username = data.get('username', '').strip()
+        password = data.get('password', '').strip()
+        role     = data.get('role', 'customer')
+
+        if not username or not password:
+            return jsonify({"message": "Username and password are required"}), 400
+
+        if role not in ('admin', 'customer'):
+            return jsonify({"message": "Invalid role"}), 400
+
+        existing = users_dao.get_user_by_username(connection, username)
+        if existing:
+            return jsonify({"message": "Username already taken"}), 409
+
+        user_id = users_dao.insert_user(connection, username, password, role)
+
+        token = create_access_token(
+            identity=str(user_id),
+            additional_claims={"role": role}
+        )
+
+        return jsonify({
+            "token":    token,
+            "role":     role,
+            "username": username,
+            "message":  "Account created successfully"
+        }), 201
+
+    except Exception as e:
+        print("SIGNUP ERROR:", str(e))
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/login', methods=['POST'])
 def login():
     try:
