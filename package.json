@@ -1,8 +1,4 @@
 {
-<<<<<<< HEAD
-  "dependencies": {
-    "bootstrap-icons": "^1.13.1"
-=======
   "name": "frontend",
   "private": true,
   "version": "0.0.0",
@@ -31,6 +27,5 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
     "vite": "^8.0.12"
->>>>>>> 5948c9bb9600ad9384812c06fa64a99c73eddc9d
   }
 }
