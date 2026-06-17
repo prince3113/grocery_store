@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import API from "../services/api";
 
 const CATEGORIES = ["Grocery", "Fruits", "Dairy", "Grains", "Electronics"];
@@ -18,11 +19,12 @@ function Toast({ msg, type, onDone }) {
     return () => clearTimeout(t);
   }, [onDone]);
 
-  return (
+  return createPortal(
     <div className={`gs-toast ${type}`} role="alert">
       <span>{type === "success" ? "✅" : "❌"}</span>
       {msg}
-    </div>
+    </div>,
+    document.body
   );
 }
 

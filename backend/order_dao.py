@@ -87,7 +87,7 @@ def get_all_orders(connection):
             'order_id':order_id,
             'customer_name':customer_name,
             'total':total,
-            'datetime':dt
+            'datetime': dt.isoformat() if dt else None
         })
     cursor.close()
 

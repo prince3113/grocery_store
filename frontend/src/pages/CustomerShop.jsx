@@ -1,39 +1,107 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import API from "../services/api";
 
 const CATEGORY_META = {
-  Fruits:      { emoji: "🍎", bg: "#ddeee2", color: "#4a7c59" },
-  Dairy:       { emoji: "🥛", bg: "#e3eaf5", color: "#6b8cba" },
-  Grains:      { emoji: "🌾", bg: "#faeee3", color: "#c9884c" },
+  Fruits: { emoji: "🍎", bg: "#ddeee2", color: "#4a7c59" },
+  Dairy: { emoji: "🥛", bg: "#e3eaf5", color: "#6b8cba" },
+  Grains: { emoji: "🌾", bg: "#faeee3", color: "#c9884c" },
   Electronics: { emoji: "💻", bg: "#fdf3dc", color: "#c9a84c" },
-  Grocery:     { emoji: "🛒", bg: "#e8f0ea", color: "#6aab7a" },
+  Grocery: { emoji: "🛒", bg: "#e8f0ea", color: "#6aab7a" },
 };
 
 const DEFAULT_META = { emoji: "📦", bg: "#f0ece8", color: "#9e8c7a" };
+
+const getProductEmoji = (name, category) => {
+  const n = name.toLowerCase();
+
+  // Fruits
+  if (n.includes("apple")) return "🍎";
+  if (n.includes("banana")) return "🍌";
+  if (n.includes("cherry")) return "🍒";
+  if (n.includes("grape")) return "🍇";
+  if (n.includes("orange")) return "🍊";
+  if (n.includes("lemon")) return "🍋";
+  if (n.includes("strawberry")) return "🍓";
+  if (n.includes("watermelon") || n.includes("melon")) return "🍉";
+  if (n.includes("peach")) return "🍑";
+  if (n.includes("pineapple")) return "🍍";
+  if (n.includes("mango")) return "🥭";
+  if (n.includes("kiwi")) return "🥝";
+  if (n.includes("berry") || n.includes("berries")) return "🫐";
+  if (n.includes("pear")) return "🍐";
+  if (n.includes("coconut")) return "🥥";
+
+  // Grains / Bread / Baking
+  if (n.includes("wheat") || n.includes("atta") || n.includes("flour")) return "🌾";
+  if (n.includes("rice")) return "🍚";
+  if (n.includes("bread")) return "🍞";
+  if (n.includes("oat")) return "🥣";
+  if (n.includes("pasta") || n.includes("noodle")) return "🍝";
+
+  // Dairy
+  if (n.includes("milk")) return "🥛";
+  if (n.includes("cheese")) return "🧀";
+  if (n.includes("butter")) return "🧈";
+  if (n.includes("yogurt") || n.includes("curd")) return "🥛";
+  if (n.includes("egg")) return "🥚";
+
+  // Vegetables
+  if (n.includes("potato")) return "🥔";
+  if (n.includes("tomato")) return "🍅";
+  if (n.includes("onion")) return "🧅";
+  if (n.includes("garlic")) return "🧄";
+  if (n.includes("carrot")) return "🥕";
+  if (n.includes("corn")) return "🌽";
+  if (n.includes("broccoli") || n.includes("cabbage")) return "🥦";
+  if (n.includes("cucumber")) return "🥒";
+  if (n.includes("chili") || n.includes("pepper")) return "🌶️";
+  if (n.includes("spinach") || n.includes("lettuce") || n.includes("okra") || n.includes("lady finger")) return "🥬";
+
+  // Electronics
+  if (n.includes("ssd") || n.includes("hard drive") || n.includes("disk")) return "💾";
+  if (n.includes("laptop") || n.includes("computer")) return "💻";
+  if (n.includes("phone") || n.includes("mobile")) return "📱";
+  if (n.includes("watch")) return "⌚";
+  if (n.includes("keyboard")) return "⌨️";
+  if (n.includes("mouse")) return "🖱️";
+  if (n.includes("headphone") || n.includes("earphone")) return "🎧";
+  if (n.includes("cable") || n.includes("charger")) return "🔌";
+
+  // Fallback to category defaults
+  if (category === "Fruits") return "🍎";
+  if (category === "Dairy") return "🥛";
+  if (category === "Grains") return "🌾";
+  if (category === "Electronics") return "💻";
+  if (category === "Grocery") return "🛒";
+
+  return "📦";
+};
 
 function Toast({ msg, type, onDone }) {
   useEffect(() => {
     const t = setTimeout(onDone, 2600);
     return () => clearTimeout(t);
   }, [onDone]);
-  return (
+  return createPortal(
     <div className={`gs-toast ${type}`}>
       <span>{type === "success" ? "✅" : "❌"}</span> {msg}
-    </div>
+    </div>,
+    document.body
   );
 }
 
 export default function CustomerShop() {
-  const [products,  setProducts]  = useState([]);
-  const [cart,      setCart]      = useState([]);   // { product, qty }
-  const [filter,    setFilter]    = useState("All");
-  const [search,    setSearch]    = useState("");
-  const [placing,   setPlacing]   = useState(false);
-  const [toast,     setToast]     = useState(null);
-  const [showCart,  setShowCart]  = useState(false);
-  const [loading,   setLoading]   = useState(true);
+  const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([]);   // { product, qty }
+  const [filter, setFilter] = useState("All");
+  const [search, setSearch] = useState("");
+  const [placing, setPlacing] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [showCart, setShowCart] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const username  = sessionStorage.getItem("username") || "Customer";
+  const username = sessionStorage.getItem("username") || "Customer";
   const showToast = (msg, type = "success") => setToast({ msg, type });
 
   useEffect(() => {
@@ -44,8 +112,8 @@ export default function CustomerShop() {
   }, []);
 
   /* Cart helpers */
-  const cartTotal  = cart.reduce((s, i) => s + i.product.price_per_unit * i.qty, 0);
-  const cartCount  = cart.reduce((s, i) => s + i.qty, 0);
+  const cartTotal = cart.reduce((s, i) => s + i.product.price_per_unit * i.qty, 0);
+  const cartCount = cart.reduce((s, i) => s + i.qty, 0);
 
   const addToCart = (product) => {
     setCart((prev) => {
@@ -84,8 +152,8 @@ export default function CustomerShop() {
         customer_name: username,
         total: cartTotal,
         order_details: cart.map((i) => ({
-          product_id:  i.product.product_id,
-          quantity:    i.qty,
+          product_id: i.product.product_id,
+          quantity: i.qty,
           total_price: i.product.price_per_unit * i.qty,
         })),
       });
@@ -103,11 +171,11 @@ export default function CustomerShop() {
 
   const filtered = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
-    const matchCat    = filter === "All" || p.category === filter;
+    const matchCat = filter === "All" || p.category === filter;
     return matchSearch && matchCat;
   });
 
-  const hour     = new Date().getHours();
+  const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   return (
@@ -127,14 +195,16 @@ export default function CustomerShop() {
         />
       )}
       <div style={{
-        position: "fixed", top: 0, right: 0,
-        width: 360, height: "100vh",
+        position: "fixed", top: 20, right: 20,
+        width: 360, maxHeight: "calc(100vh - 40px)",
         background: "var(--bg-card)",
-        borderLeft: "1px solid var(--border-soft)",
+        border: "1px solid var(--border-soft)",
+        borderRadius: "var(--radius-lg)",
         boxShadow: "var(--shadow-lg)",
         zIndex: 500,
-        transform: showCart ? "translateX(0)" : "translateX(100%)",
-        transition: "transform 0.28s cubic-bezier(0.4,0,0.2,1)",
+        transform: showCart ? "translateX(0)" : "translateX(calc(100% + 40px))",
+        visibility: showCart ? "visible" : "hidden",
+        transition: "transform 0.28s cubic-bezier(0.4,0,0.2,1), visibility 0.28s",
         display: "flex", flexDirection: "column",
       }}>
         {/* Cart header */}
@@ -177,7 +247,7 @@ export default function CustomerShop() {
                     justifyContent: "center", fontSize: 20,
                     flexShrink: 0,
                   }}>
-                    {meta.emoji}
+                    {getProductEmoji(item.product.name, item.product.category)}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 600, fontSize: 13.5, color: "var(--text-primary)" }}>
@@ -301,7 +371,7 @@ export default function CustomerShop() {
         </div>
         <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
           {categories.map((c) => {
-            const meta  = CATEGORY_META[c] || DEFAULT_META;
+            const meta = CATEGORY_META[c] || DEFAULT_META;
             const active = filter === c;
             return (
               <button
@@ -342,7 +412,7 @@ export default function CustomerShop() {
           gap: 16,
         }}>
           {filtered.map((p) => {
-            const meta     = CATEGORY_META[p.category] || DEFAULT_META;
+            const meta = CATEGORY_META[p.category] || DEFAULT_META;
             const cartItem = cart.find((i) => i.product.product_id === p.product_id);
 
             return (
@@ -364,7 +434,7 @@ export default function CustomerShop() {
                   display: "flex", alignItems: "center",
                   justifyContent: "center", fontSize: 48,
                 }}>
-                  {meta.emoji}
+                  {getProductEmoji(p.name, p.category)}
                 </div>
 
                 <div style={{ padding: "14px 16px", flex: 1, display: "flex", flexDirection: "column" }}>
@@ -432,12 +502,12 @@ export default function CustomerShop() {
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background = "var(--accent-green)";
-                          e.currentTarget.style.color      = "#fff";
+                          e.currentTarget.style.color = "#fff";
                           e.currentTarget.style.borderColor = "var(--accent-green)";
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background  = "var(--accent-green-soft)";
-                          e.currentTarget.style.color       = "var(--accent-green)";
+                          e.currentTarget.style.background = "var(--accent-green-soft)";
+                          e.currentTarget.style.color = "var(--accent-green)";
                           e.currentTarget.style.borderColor = "#b8d9c4";
                         }}
                       >

@@ -2,22 +2,22 @@ import { NavLink, useNavigate } from "react-router-dom";
 import "../sidebar.css";
 
 const ADMIN_NAV = [
-  { to: "/",              icon: "📊", label: "Dashboard"     },
-  { to: "/products",      icon: "🛍️", label: "Products"      },
-  { to: "/orders",        icon: "🧾", label: "New Order"     },
+  { to: "/", icon: "📊", label: "Dashboard" },
+  { to: "/products", icon: "🛍️", label: "Products" },
+  { to: "/orders", icon: "🧾", label: "New Order" },
   { to: "/order-history", icon: "📋", label: "Order History" },
 ];
 
 const CUSTOMER_NAV = [
-  { to: "/shop",       icon: "🛒", label: "Shop"       },
-  { to: "/my-orders",  icon: "📋", label: "My Orders"  },
+  { to: "/shop", icon: "🛒", label: "Shop" },
+  { to: "/my-orders", icon: "📋", label: "My Orders" },
 ];
 
 function Sidebar({ darkMode, setDarkMode }) {
   const navigate = useNavigate();
   const username = sessionStorage.getItem("username") || "User";
-  const role     = sessionStorage.getItem("role")     || "customer";
-  const token    = sessionStorage.getItem("token");
+  const role = sessionStorage.getItem("role") || "customer";
+  const token = sessionStorage.getItem("token");
 
   const logout = () => {
     sessionStorage.clear();
@@ -30,8 +30,8 @@ function Sidebar({ darkMode, setDarkMode }) {
   const navItems = role === "admin" ? ADMIN_NAV : CUSTOMER_NAV;
 
   /* Accent colour per role */
-  const accentBg    = role === "admin" ? "var(--accent-green-soft)" : "var(--accent-blue-soft)";
-  const accentColor = role === "admin" ? "var(--accent-green)"      : "var(--accent-blue)";
+  const accentBg = role === "admin" ? "var(--accent-green-soft)" : "var(--accent-blue-soft)";
+  const accentColor = role === "admin" ? "var(--accent-green)" : "var(--accent-blue)";
 
   return (
     <aside className="sidebar">
@@ -65,9 +65,9 @@ function Sidebar({ darkMode, setDarkMode }) {
             style={({ isActive }) =>
               isActive
                 ? {
-                    background: accentBg,
-                    color: accentColor,
-                  }
+                  background: accentBg,
+                  color: accentColor,
+                }
                 : {}
             }
           >
