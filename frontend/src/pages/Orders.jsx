@@ -15,14 +15,14 @@ function Toast({ msg, type, onDone }) {
 }
 
 function Orders() {
-  const [products,         setProducts]         = useState([]);
-  const [customerName,     setCustomerName]     = useState("");
-  const [selectedProduct,  setSelectedProduct]  = useState("");
-  const [quantity,         setQuantity]         = useState(1);
-  const [orderItems,       setOrderItems]       = useState([]);
-  const [total,            setTotal]            = useState(0);
-  const [placing,          setPlacing]          = useState(false);
-  const [toast,            setToast]            = useState(null);
+  const [products, setProducts] = useState([]);
+  const [customerName, setCustomerName] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [orderItems, setOrderItems] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [placing, setPlacing] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const username = sessionStorage.getItem("username") || "";
 
@@ -50,9 +50,9 @@ function Orders() {
       ...prev,
       {
         product_id: product.product_id,
-        name:       product.name,
-        quantity:   Number(quantity),
-        uom_name:   product.uom_name,
+        name: product.name,
+        quantity: Number(quantity),
+        uom_name: product.uom_name,
         total_price: itemTotal,
       },
     ]);
@@ -77,8 +77,8 @@ function Orders() {
         customer_name: customerName,
         total,
         order_details: orderItems.map((item) => ({
-          product_id:  item.product_id,
-          quantity:    item.quantity,
+          product_id: item.product_id,
+          quantity: item.quantity,
           total_price: item.total_price,
         })),
       });
@@ -100,13 +100,13 @@ function Orders() {
   };
 
   return (
-    <div className="fade-in">
+    <div className="fade-in" style={{ paddingBottom: 8 }}>
       {toast && <Toast msg={toast.msg} type={toast.type} onDone={() => setToast(null)} />}
 
-      <div className="page-header">
+      <div className="page-header" style={{ marginBottom: 16 }}>
         <div>
-          <h1 className="page-title">New Order</h1>
-          <p className="page-subtitle">Build and place a customer order</p>
+          <h1 className="page-title" style={{ fontSize: 20 }}>New Order</h1>
+          <p className="page-subtitle" style={{ fontSize: 13 }}>Build and place a customer order</p>
         </div>
       </div>
 
@@ -114,9 +114,11 @@ function Orders() {
 
         {/* LEFT — Order Builder */}
         <div>
-          <div className="gs-card mb-16">
-            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 18 }}>Customer Details</h3>
-            <div className="gs-form-group">
+          <div className="gs-card">
+            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 16 }}>Order Builder</h3>
+
+            {/* Customer Details */}
+            <div className="gs-form-group" style={{ marginBottom: 14 }}>
               <label className="gs-label">Customer Name</label>
               <input
                 id="order-customer-name"
@@ -126,76 +128,83 @@ function Orders() {
                 onChange={(e) => setCustomerName(e.target.value)}
               />
             </div>
-          </div>
 
-          <div className="gs-card">
-            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 18 }}>Add Products</h3>
+            {/* Product Selection and Quantity side-by-side */}
+            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 12, marginBottom: 14 }}>
+              <div className="gs-form-group" style={{ marginBottom: 0 }}>
+                <label className="gs-label">Select Product</label>
+                <div className="gs-select-wrapper">
+                  <select
+                    id="order-product-select"
+                    className="gs-select"
+                    value={selectedProduct}
+                    onChange={(e) => setSelectedProduct(e.target.value)}
+                  >
+                    <option value="">Choose a product…</option>
+                    {products.map((p) => (
+                      <option key={p.product_id} value={p.product_id}>
+                        {p.name} — ₹{p.price_per_unit}/{p.uom_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
 
-            <div className="gs-form-group">
-              <label className="gs-label">Select Product</label>
-              <div className="gs-select-wrapper">
-                <select
-                  id="order-product-select"
-                  className="gs-select"
-                  value={selectedProduct}
-                  onChange={(e) => setSelectedProduct(e.target.value)}
-                >
-                  <option value="">Choose a product…</option>
-                  {products.map((p) => (
-                    <option key={p.product_id} value={p.product_id}>
-                      {p.name} — ₹{p.price_per_unit}/{p.uom_name}
-                    </option>
-                  ))}
-                </select>
+              <div className="gs-form-group" style={{ marginBottom: 0 }}>
+                <label className="gs-label">Quantity</label>
+                <input
+                  id="order-quantity"
+                  type="number"
+                  className="gs-input"
+                  value={quantity}
+                  min="1"
+                  onChange={(e) => setQuantity(e.target.value)}
+                />
               </div>
             </div>
 
-            {/* Selected product preview */}
+            {/* Selected product and price preview side-by-side */}
             {selectedProductObj && (
               <div style={{
-                background: "var(--accent-green-soft)",
-                borderRadius: "var(--radius-md)",
-                padding: "10px 14px",
-                fontSize: 13.5,
-                color: "var(--accent-green)",
-                fontWeight: 500,
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 12,
                 marginBottom: 14,
               }}>
-                ₹{selectedProductObj.price_per_unit} per {selectedProductObj.uom_name}
+                <div style={{
+                  background: "var(--accent-green-soft)",
+                  borderRadius: "var(--radius-md)",
+                  padding: "8px 12px",
+                  fontSize: 13,
+                  color: "var(--accent-green)",
+                  fontWeight: 500,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center"
+                }}>
+                  ₹{selectedProductObj.price_per_unit} per {selectedProductObj.uom_name}
+                </div>
+                {quantity > 0 && (
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    background: "var(--bg-secondary)",
+                    borderRadius: "var(--radius-md)",
+                    padding: "8px 12px",
+                    fontSize: 13,
+                  }}>
+                    <span style={{ color: "var(--text-secondary)" }}>Item Total</span>
+                    <strong style={{ color: "var(--accent-green)" }}>
+                      ₹{(selectedProductObj.price_per_unit * Number(quantity)).toFixed(2)}
+                    </strong>
+                  </div>
+                )}
               </div>
             )}
 
-            <div className="gs-form-group">
-              <label className="gs-label">Quantity</label>
-              <input
-                id="order-quantity"
-                type="number"
-                className="gs-input"
-                value={quantity}
-                min="1"
-                onChange={(e) => setQuantity(e.target.value)}
-              />
-            </div>
-
-            {/* Price preview */}
-            {selectedProductObj && quantity > 0 && (
-              <div style={{
-                display: "flex",
-                justifyContent: "space-between",
-                background: "var(--bg-secondary)",
-                borderRadius: "var(--radius-md)",
-                padding: "10px 14px",
-                marginBottom: 16,
-                fontSize: 14,
-              }}>
-                <span style={{ color: "var(--text-secondary)" }}>Item Total</span>
-                <strong style={{ color: "var(--accent-green)" }}>
-                  ₹{(selectedProductObj.price_per_unit * Number(quantity)).toFixed(2)}
-                </strong>
-              </div>
-            )}
-
-            <button className="btn-primary-gs w-full" style={{ justifyContent: "center" }} onClick={addItem}>
+            <button className="btn-primary-gs w-full" style={{ justifyContent: "center", padding: "10px" }} onClick={addItem}>
               ＋ Add to Order
             </button>
           </div>
@@ -227,15 +236,15 @@ function Orders() {
               <>
                 <div style={{ display: "flex", flexDirection: "column", gap: 0, marginBottom: 16 }}>
                   {orderItems.map((item, i) => (
-                    <div key={i} className="order-item-row">
-                      <div className="order-item-name">{item.name}</div>
-                      <div className="order-item-qty">{item.quantity} {item.uom_name}</div>
-                      <div className="order-item-price">₹{item.total_price}</div>
+                    <div key={i} className="order-item-row" style={{ padding: "8px 12px", marginBottom: "6px" }}>
+                      <div className="order-item-name" style={{ fontSize: "13.5px" }}>{item.name}</div>
+                      <div className="order-item-qty" style={{ fontSize: "12.5px" }}>{item.quantity} {item.uom_name}</div>
+                      <div className="order-item-price" style={{ fontSize: "13.5px" }}>₹{item.total_price}</div>
                       <button
                         className="btn-icon-gs"
                         onClick={() => removeItem(i)}
                         title="Remove item"
-                        style={{ color: "var(--accent-rose)", border: "none", background: "transparent" }}
+                        style={{ color: "var(--accent-rose)", border: "none", background: "transparent", width: "24px", height: "24px", fontSize: "12px", padding: 0 }}
                       >
                         ✕
                       </button>
@@ -243,16 +252,16 @@ function Orders() {
                   ))}
                 </div>
 
-                <div className="gs-divider" />
+                <div className="gs-divider" style={{ margin: "12px 0" }} />
 
                 <div style={{
                   display: "flex", justifyContent: "space-between",
-                  padding: "12px 0", marginBottom: 20,
+                  padding: "4px 0", marginBottom: 16,
                 }}>
-                  <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)" }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>
                     Total Amount
                   </span>
-                  <span style={{ fontSize: 20, fontWeight: 700, color: "var(--accent-green)", fontFamily: "var(--font-display)" }}>
+                  <span style={{ fontSize: 18, fontWeight: 700, color: "var(--accent-green)", fontFamily: "var(--font-display)" }}>
                     ₹{total.toFixed(2)}
                   </span>
                 </div>
@@ -261,8 +270,8 @@ function Orders() {
                   id="place-order-btn"
                   className="btn-primary-gs w-full"
                   style={{
-                    justifyContent: "center", padding: "12px",
-                    fontSize: 15, opacity: placing ? 0.7 : 1,
+                    justifyContent: "center", padding: "10px",
+                    fontSize: 14, opacity: placing ? 0.7 : 1,
                     cursor: placing ? "not-allowed" : "pointer",
                   }}
                   onClick={placeOrder}
